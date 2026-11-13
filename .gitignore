@@ -2,9 +2,7 @@
 node_modules/
 frontend/node_modules/
 
-# Frontend Build Output
-frontend/dist/
-dist/
+# Frontend Cache (build folder frontend/dist is included in git as requested)
 .vite/
 frontend/.vite/
 
