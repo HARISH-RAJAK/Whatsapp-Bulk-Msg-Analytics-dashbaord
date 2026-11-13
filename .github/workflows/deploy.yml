@@ -13,32 +13,34 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy to Server via SSH
+    name: Deploy to Hostinger Server via SSH
     runs-on: ubuntu-latest
 
     steps:
       - name: 1. Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 2. Prepare Release Files
+      - name: 2. Prepare Release Bundle
         run: |
           mkdir -p release-bundle
           
           # 1. Copy pre-built frontend files (index.html, assets/) to root of release
           if [ -d "frontend/dist" ]; then
+            echo ">> Copying built frontend assets from frontend/dist..."
             cp -r frontend/dist/* release-bundle/
           elif [ -d "dist" ]; then
+            echo ">> Copying built frontend assets from dist..."
             cp -r dist/* release-bundle/
           else
-            echo "::error::Build folder (frontend/dist) not found! Run 'npm run build' before pushing."
+            echo "::error::Build folder (frontend/dist) not found! Run 'npm run build' inside frontend/ before pushing."
             exit 1
           fi
 
-          # 2. Copy backend directory (excluding any local .env)
+          # 2. Copy backend directory (excluding any local sensitive .env)
           mkdir -p release-bundle/backend
           rsync -av --exclude='.env' backend/ release-bundle/backend/
 
-          # 3. Copy root .htaccess
+          # 3. Copy root .htaccess (handles React Router SPA fallback + /api routing)
           if [ -f ".htaccess" ]; then
             cp .htaccess release-bundle/.htaccess
           fi
@@ -49,9 +51,12 @@ jobs:
             cp database/schema.sql release-bundle/database/
           fi
 
-          # 5. Copy deployment script
+          # 5. Copy server deployment script
           cp deploy.sh release-bundle/deploy.sh
           chmod +x release-bundle/deploy.sh
+
+          echo ">> Release bundle contents ready:"
+          ls -la release-bundle/
 
       - name: 3. Transfer Files to Server via SCP
         uses: appleboy/scp-action@v0.1.7
@@ -59,26 +64,27 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
+          port: ${{ secrets.SERVER_PORT || 65002 }}
           source: "./release-bundle/*,./release-bundle/.[!.]*"
-          target: "/tmp/clickncult_release"
+          target: "release_temp"
           strip_components: 1
 
-      - name: 4. SSH into Server and Place Files
+      - name: 4. SSH into Server and Place Files in public_html
         uses: appleboy/ssh-action@v1.0.3
         env:
-          TARGET_DIR: ${{ secrets.TARGET_DIR || '/var/www/msg.clickncult.com' }}
+          TARGET_DIR: ${{ secrets.TARGET_DIR || 'domains/msg.clickncult.com/public_html' }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.SERVER_PORT || 22 }}
+          port: ${{ secrets.SERVER_PORT || 65002 }}
           envs: TARGET_DIR
           script: |
-            chmod +x /tmp/clickncult_release/deploy.sh
-            TARGET_DIR="$TARGET_DIR" /tmp/clickncult_release/deploy.sh
-            rm -rf /tmp/clickncult_release
+            chmod +x ~/release_temp/deploy.sh
+            TARGET_DIR="$TARGET_DIR" ~/release_temp/deploy.sh
+            rm -rf ~/release_temp
 
-      - name: 5. Verify Live Status
+      - name: 5. Verify Live Deployment
         run: |
-          curl -s -k -I "https://msg.clickncult.com" | head -n 5 || echo "Server deployed successfully."
+          echo "Verifying application availability at https://msg.clickncult.com..."
+          curl -s -k -I "https://msg.clickncult.com" | head -n 5 || echo "Notice: Check DNS if newly pointed"
