@@ -1,14 +1,10 @@
 -- ==============================================================================
 -- ClickNCult - WhatsApp Analytics Platform
--- Database Schema: clickncult_analytics
+-- Database Schema: Tables & Admin Seed Data
 -- Target: MySQL 8.0+ / MariaDB 10.5+ (InnoDB, utf8mb4)
+-- Note for Hostinger / cPanel phpMyAdmin:
+-- Select your database in phpMyAdmin and click Import -> schema.sql
 -- ==============================================================================
-
-CREATE DATABASE IF NOT EXISTS `clickncult_analytics`
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE `clickncult_analytics`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `webhook_logs`;
@@ -157,4 +153,3 @@ VALUES (
   '$2y$10$wK1F5y3zLq.N6QpD4Bqmye0lWqK2bU9sT8k7pZ0xV9R1u1q4tSZeG',
   'admin'
 ) ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
-

@@ -13,9 +13,13 @@ class Database
     public static function getConnection(): PDO
     {
         if (self::$instance === null) {
-            $host = getenv('DB_HOST') ?: '127.0.0.1';
-            $port = getenv('DB_PORT') ?: '3306';
             $dbname = getenv('DB_DATABASE') ?: 'clickncult_analytics';
+            $host = getenv('DB_HOST') ?: 'localhost';
+            // Hostinger safety fallback: If DB_HOST was accidentally set to the database name
+            if ($host === $dbname || (!str_contains($host, '.') && $host !== 'localhost')) {
+                $host = 'localhost';
+            }
+            $port = getenv('DB_PORT') ?: '3306';
             $user = getenv('DB_USERNAME') ?: 'root';
             $password = getenv('DB_PASSWORD') ?: '';
 
