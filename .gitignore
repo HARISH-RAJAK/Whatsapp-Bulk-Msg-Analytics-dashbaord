@@ -1,0 +1,32 @@
+# Node & Dependencies
+node_modules/
+frontend/node_modules/
+
+# Frontend Build Output
+frontend/dist/
+dist/
+.vite/
+frontend/.vite/
+
+# NPM & Yarn Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Sensitive Credentials (DB password only in backend/.env)
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+*.log
+
+# Operating System & Editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

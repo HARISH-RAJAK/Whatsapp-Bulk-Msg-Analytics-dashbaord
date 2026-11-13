@@ -1,0 +1,8 @@
+{
+  "test": true,
+  "service": "whatsapp",
+  "eventName": "test_connection",
+  "message": "MSG91 Test Run Webhook Ping - Do not count as customer message",
+  "companyId": "444370"
+}
+

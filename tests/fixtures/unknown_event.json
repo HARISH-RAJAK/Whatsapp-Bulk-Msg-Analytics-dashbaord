@@ -1,0 +1,25 @@
+{
+  "crqid": "crq_unk_3003",
+  "companyId": "444370",
+  "requestedAt": "2025-07-15T12:00:00+05:30",
+  "customerNumber": "919876543210",
+  "content": "Testing unknown provider event status",
+  "requestId": "req_unk_3003",
+  "reason": "Carrier network deferred delivery",
+  "eventName": "NetworkDeferred",
+  "uuid": "wamid.HBgMOTE5ODc2NTQzMjEwFQIAERgSRTFDNzg0ODNCMDI0M0FDODU0CC==",
+  "integratedNumber": "919028711111",
+  "direction": "1",
+  "templateName": "generic_alert",
+  "campaignName": "Alert Broadcast",
+  "campaignRequestId": "camp_alert_01",
+  "templateLanguage": "en",
+  "price": "0.10",
+  "contentType": "text",
+  "messageType": "text",
+  "statusCode": "88",
+  "statusUpdatedAt": "2025-07-15T12:01:00+05:30",
+  "ts": "2025-07-15T12:01:01+05:30",
+  "webhookType": "outbound"
+}
+

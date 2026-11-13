@@ -1,0 +1,25 @@
+{
+  "crqid": "crq_nouuid_4004",
+  "companyId": "444370",
+  "requestedAt": "2025-07-15T12:30:00+05:30",
+  "customerNumber": "919811122233",
+  "content": "Message without UUID from initial submission queue",
+  "requestId": "req_nouuid_4004",
+  "reason": "",
+  "eventName": "Submitted",
+  "uuid": null,
+  "integratedNumber": "919028711111",
+  "direction": "1",
+  "templateName": "welcome_message",
+  "campaignName": "Onboarding 2025",
+  "campaignRequestId": "camp_onboard_01",
+  "templateLanguage": "en",
+  "price": "0.10",
+  "contentType": "text",
+  "messageType": "text",
+  "statusCode": "0",
+  "statusUpdatedAt": "2025-07-15T12:30:01+05:30",
+  "ts": "2025-07-15T12:30:02+05:30",
+  "webhookType": "outbound"
+}
+

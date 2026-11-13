@@ -1,0 +1,25 @@
+{
+  "crqid": "crq_deliv_1001",
+  "companyId": "444370",
+  "requestedAt": "2025-07-15T11:22:55+05:30",
+  "customerNumber": "918158812345",
+  "content": "Your ClickNCult order #1001 has been confirmed.",
+  "requestId": "req_deliv_1001",
+  "reason": "",
+  "eventName": "Delivered",
+  "uuid": "wamid.HBgMOTE4MTU4ODEyMzQ1FQIAERgSRTFDNzg0ODNCMDI0M0FDODU0AA==",
+  "integratedNumber": "919028711111",
+  "direction": "1",
+  "templateName": "order_confirmed",
+  "campaignName": "July Order Notifications",
+  "campaignRequestId": "camp_2025_07",
+  "templateLanguage": "en",
+  "price": "0.10",
+  "contentType": "text",
+  "messageType": "text",
+  "statusCode": "1",
+  "statusUpdatedAt": "2025-07-15T11:23:05+05:30",
+  "ts": "2025-07-15T11:23:06+05:30",
+  "webhookType": "outbound"
+}
+

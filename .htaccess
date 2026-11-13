@@ -1,0 +1,45 @@
+# ==============================================================================
+# ClickNCult - Root Apache Configuration for msg.clickncult.com
+# ==============================================================================
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 1. Block access to sensitive files and internal backend directories
+    RewriteRule ^(\.git|\.env|database) - [F,L]
+    RewriteRule ^backend/(config|bin|services|helpers|middleware) - [F,L]
+
+    # 2. Route /api/* directly to /backend/api/*
+    RewriteCond %{REQUEST_URI} ^/api/(.*)$
+    RewriteRule ^api/(.*)$ backend/api/$1 [L,QSA]
+
+    # 3. Allow direct access to backend files (e.g. /backend/webhooks/msg91-whatsapp.php)
+    RewriteCond %{REQUEST_URI} ^/backend/ [NC]
+    RewriteRule ^ - [L]
+
+    # 4. If the requested file or directory exists physically, serve it directly (e.g. /assets/...)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # 5. Fallback for all other URLs to index.html (React Router SPA routing)
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Enable GZIP compression for fast delivery
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml
+</IfModule>
+
+# Prevent directory listings
+Options -Indexes
+

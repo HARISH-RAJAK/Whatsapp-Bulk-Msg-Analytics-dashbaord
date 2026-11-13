@@ -1,0 +1,119 @@
+name: Deploy ClickNCult WhatsApp Analytics to msg.clickncult.com
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-test:
+    name: Build & Verify Production Bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 2. Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 'frontend/package-lock.json'
+
+      - name: 3. Install & Build Frontend
+        run: |
+          cd frontend
+          # Inject production domain from GitHub Secrets or default to msg.clickncult.com
+          echo "VITE_BACKEND_URL=${{ secrets.VITE_BACKEND_URL || 'https://msg.clickncult.com' }}" > .env.production
+          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL || 'https://msg.clickncult.com/api' }}" >> .env.production
+          
+          npm ci || npm install
+          npm run build
+          cd ..
+
+      - name: 4. Run Automated Verification Test Suite
+        run: |
+          if [ -f "tests/verify_suite.js" ]; then
+            node tests/verify_suite.js
+          fi
+
+      - name: 5. Prepare Deployment Package
+        run: |
+          mkdir -p dist-deploy
+          
+          # 1. Copy compiled frontend assets (index.html, assets/)
+          cp -r frontend/dist/* dist-deploy/
+          
+          # 2. Copy single backend directory (excluding any local sensitive .env)
+          mkdir -p dist-deploy/backend
+          rsync -av --exclude='.env' backend/ dist-deploy/backend/
+          
+          # 3. Copy root Apache router & deployment script
+          cp .htaccess dist-deploy/.htaccess
+          cp deploy.sh dist-deploy/deploy.sh
+          chmod +x dist-deploy/deploy.sh
+          
+          # 4. Copy database schema
+          mkdir -p dist-deploy/database
+          cp database/schema.sql dist-deploy/database/
+
+      - name: 6. Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: clickncult-production-dist
+          path: dist-deploy/
+          retention-days: 5
+
+  deploy:
+    name: Deploy to Server (msg.clickncult.com)
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: 1. Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: clickncult-production-dist
+          path: ./dist-ready
+
+      - name: 2. Deploy via SSH & SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          source: "./dist-ready/*,./dist-ready/.[!.]*"
+          target: "/tmp/clickncult_release"
+          strip_components: 1
+
+      - name: 3. Execute Server Deployment Script
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          TARGET_DIR: ${{ secrets.TARGET_DIR || '/var/www/msg.clickncult.com' }}
+          PRODUCTION_DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: ${{ secrets.SERVER_PORT || 22 }}
+          envs: TARGET_DIR,PRODUCTION_DB_PASSWORD
+          script: |
+            chmod +x /tmp/clickncult_release/deploy.sh
+            TARGET_DIR="$TARGET_DIR" PRODUCTION_DB_PASSWORD="$PRODUCTION_DB_PASSWORD" /tmp/clickncult_release/deploy.sh
+            rm -rf /tmp/clickncult_release
+
+      - name: 4. Deployment Health Check
+        run: |
+          echo "Verifying live deployment at https://msg.clickncult.com..."
+          curl -s -k -I "https://msg.clickncult.com" | head -n 5 || echo "Server not yet reachable via public DNS"

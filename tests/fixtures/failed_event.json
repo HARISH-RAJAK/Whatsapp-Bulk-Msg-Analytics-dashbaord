@@ -1,0 +1,25 @@
+{
+  "crqid": "crq_fail_2002",
+  "companyId": "444370",
+  "requestedAt": "2025-07-15T11:40:00+05:30",
+  "customerNumber": "919999900000",
+  "content": "Special promotional discount code: FLASH50",
+  "requestId": "req_fail_2002",
+  "reason": "Recipient phone number is not registered on WhatsApp (error code: 131026)",
+  "eventName": "Failed",
+  "uuid": "wamid.HBgMOTE5OTk5OTAwMDAwFQIAERgSRTFDNzg0ODNCMDI0M0FDODU0BB==",
+  "integratedNumber": "919028711111",
+  "direction": "1",
+  "templateName": "flash_discount",
+  "campaignName": "Monsoon Flash Sale",
+  "campaignRequestId": "camp_monsoon_01",
+  "templateLanguage": "en",
+  "price": "0.00",
+  "contentType": "text",
+  "messageType": "text",
+  "statusCode": "16",
+  "statusUpdatedAt": "2025-07-15T11:40:05+05:30",
+  "ts": "2025-07-15T11:40:06+05:30",
+  "webhookType": "outbound"
+}
+

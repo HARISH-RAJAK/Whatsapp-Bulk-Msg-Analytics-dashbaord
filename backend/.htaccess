@@ -1,0 +1,20 @@
+# ClickNCult Backend Apache Configuration
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Prevent directory indexing
+    Options -Indexes
+
+    # Block access to hidden files and sensitive directories
+    RewriteRule ^(\.git|\.env|config) - [F,L]
+
+    # Handle Webhook aliases
+    RewriteRule ^api/webhooks/msg91/whatsapp\.php$ webhooks/msg91-whatsapp.php [L,QSA]
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+

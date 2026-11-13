@@ -1,0 +1,25 @@
+{
+  "crqid": "crq_nocamp_5005",
+  "companyId": "444370",
+  "requestedAt": "2025-07-15T13:00:00+05:30",
+  "customerNumber": "919700011122",
+  "content": "Single direct notification message without campaign metadata",
+  "requestId": "req_nocamp_5005",
+  "reason": "",
+  "eventName": "Delivered",
+  "uuid": "wamid.HBgMOTE5NzAwMDExMTIyFQIAERgSRTFDNzg0ODNCMDI0M0FDODU0EE==",
+  "integratedNumber": "919028711111",
+  "direction": "1",
+  "templateName": "otp_verification",
+  "campaignName": null,
+  "campaignRequestId": null,
+  "templateLanguage": "en",
+  "price": "0.10",
+  "contentType": "text",
+  "messageType": "text",
+  "statusCode": "1",
+  "statusUpdatedAt": "2025-07-15T13:00:05+05:30",
+  "ts": "2025-07-15T13:00:06+05:30",
+  "webhookType": "outbound"
+}
+
